@@ -1,0 +1,26 @@
+version: "3.3"  # optional since v1.27.0
+services:
+  # This will connect to realsense devices and publish. Configured with config/l515/rspub_default.toml
+  publisher:
+    build:
+        context: ./
+        dockerfile: Dockerfile
+    container_name: publisher
+    image: "allingeek/ch6_ipc"
+    privileged: true
+    network_mode: "host"
+    ipc: "host"
+    command: -producer
+  # This is an RPC Server that is also subscribing to any RGBD Images that are published. Configured with config/l515/rsintegrate_default.toml
+  consumer:
+    build:
+        context: ./
+        dockerfile: Dockerfile
+    container_name: consumer
+    image: "allingeek/ch6_ipc"
+    privileged: true
+    network_mode: "host"
+    ipc: "host"
+    depends_on:
+        - publisher
+    command: -consumer
